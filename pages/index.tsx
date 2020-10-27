@@ -25,6 +25,7 @@ const Index = () => {
         <Typography variant="h4" component="h1" gutterBottom align="center">
           CWE Search
         </Typography>
+        <hr/>
         <CweSelector/>
       </Box>
     </Container>

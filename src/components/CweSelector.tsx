@@ -1,8 +1,8 @@
-import { TextField, Box, Button, makeStyles, createStyles} from "@material-ui/core"
-import { Search, } from "@material-ui/icons"
+import { TextField, Box, makeStyles, createStyles} from "@material-ui/core"
 import React, { ChangeEvent, useEffect, useState } from "react"
 import cweList from "../cwelist.json"
-import {Autocomplete} from "@material-ui/lab"
+import {Autocomplete } from "@material-ui/lab"
+import CweNetwork from "./CweNetwork"
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -13,22 +13,12 @@ const useStyles = makeStyles(() =>
     search_container: {
       alignItems: 'center',
       display: 'table',
+      width: '100%'
     },
     input_container: {
       display: 'table-cell',
       minWidth: '120px',
       width: 'auto'
-    },
-    button_container: {
-      display: 'table-cell',
-      height: '100%',
-      position: 'relative',
-    },
-    button: {
-      position: 'absolute',
-      top: '50%',
-      transform: "TranslateY(-50%)",
-      margin: "auto 12px",
     },
     result: {
       fontSize: '1.4em',
@@ -115,20 +105,12 @@ const CweSelector = () => {
               )}
             />
           </div>
-          <div className={classes.button_container}>
-            <Button
-              color="primary"
-              variant="contained"
-              startIcon={<Search/>}
-              size="large"
-              className={classes.button}
-            >Search</Button>
-          </div>
         </div>
       </Box>
       <div className={classes.result}>
         {cwe ? `${cwe?.id} - ${cwe.name}` : 'Unknown'}
       </div>
+      {cwe && <CweNetwork cwe_id={cwe?.id}/>}
     </>
   )
 }
