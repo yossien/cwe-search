@@ -1,8 +1,9 @@
 import { TextField, Box, makeStyles, createStyles} from "@material-ui/core"
 import React, { ChangeEvent, useEffect, useState } from "react"
-import cweList from "../cwelist.json"
 import {Autocomplete } from "@material-ui/lab"
 import CweNetwork from "./CweNetwork"
+import { getCwe , getSelectorList } from "../service/CweService"
+import { cweType , selectorListType } from "../types"
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -27,44 +28,6 @@ const useStyles = makeStyles(() =>
   })
 )
 
-type cweType = {
-  id: string,
-  name: string,
-} | undefined
-
-type selectorListType = {
-  id: string,
-  name: string
-}
-
-const selectorList = ():selectorListType[] => {
-  const r = []
-  for (const [k,v] of Object.entries(cweList)){
-
-    const {name} = v
-    r.push({
-      id : k,
-      name
-    })
-  }
-  return r
-}
-
-const getCweById = (_id: string|null): cweType => {
-
-  for (const [k,v] of Object.entries(cweList)) {
-    if (_id === k){
-
-      const {name} = v
-      return {
-        id: _id,
-        name
-      }
-    }
-  }
-  return undefined
-}
-
 const CweSelector = () => {
 
   const classes = useStyles()
@@ -73,10 +36,10 @@ const CweSelector = () => {
   const [cwe, setCwe] = useState<cweType>(undefined)
 
   useEffect(() => {
-    setCwe(getCweById(cweId))
+    setCwe(getCwe(cweId))
   }, [cweId])
 
-  const selector = selectorList()
+  const selector = getSelectorList()
 
   return (
     <>
@@ -87,6 +50,7 @@ const CweSelector = () => {
               id="cwe_id_input"
               options={selector as selectorListType[]}
               autoHighlight
+              getOptionSelected={option => {return option !== null}}
               getOptionLabel={(option) => option.id}
               onChange={(_e:ChangeEvent<{}>, v:selectorListType | null)=>{
                 setCweId(v == null ? null : v.id)
@@ -107,9 +71,15 @@ const CweSelector = () => {
           </div>
         </div>
       </Box>
-      <div className={classes.result}>
-        {cwe ? `${cwe?.id} - ${cwe.name}` : 'Unknown'}
+      <div>
+        <div className={classes.result}>
+          {cwe ? `${cwe?.id} - ${cwe.name}` : 'Unknown'}
+        </div>
+        <div>
+          {cwe && `${cwe.description}`}
+        </div>
       </div>
+      <hr/>
       {cwe && <CweNetwork cwe_id={cwe?.id}/>}
     </>
   )

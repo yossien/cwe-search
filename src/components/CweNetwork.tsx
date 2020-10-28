@@ -1,47 +1,44 @@
-import cweList from "../cwelist.json"
-
-const createRelMap = ():Map<string,string[]> => {
-
-  const r = new Map<string, string[]>()
-  for (const[k,v] of Object.entries(cweList)){
-    v.child.forEach(d => {
-      const id = d.CWE_ID
-      let a = r.get(id)
-      if (a === undefined) {a = []}
-      a.push(k)
-      r.set(id,a)
-    })
-  }
-  return r
-}
+import { TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@material-ui/core"
+import { createNetWork, createRelMap, getCwe } from "../service/CweService"
 
 const relList = createRelMap()
 
-const getCwe = (_id: string):any => {
-  for (const [k,v] of Object.entries(cweList)){
-    if (k === _id){ return v}
-  }
-  return undefined
-}
+const cweNetwork = createNetWork()
 
 const renderChidren = (children: string[]) => {
   const rows = children.map(child => {
 
-    const {name} = getCwe(child)
+    const cwe = getCwe(child)
+    const name = cwe === undefined ? '' : cwe.name
 
     return (
-      <tr>
-        <td>
-          {child} - {name}
-        </td>
-      </tr>
+      <TableRow>
+        <TableCell>
+            {child}
+        </TableCell>
+        <TableCell>
+            {name}
+        </TableCell>
+      </TableRow>
     )
   })
 
   return (
-    <table>
-      {rows}
-    </table>
+    <TableContainer component={Paper}>
+      <TableHead>
+        <TableRow>
+          <TableCell>
+            CWE-ID
+          </TableCell>
+          <TableCell>
+            Name
+          </TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {rows}
+      </TableBody>
+    </TableContainer>
   )
 }
 
