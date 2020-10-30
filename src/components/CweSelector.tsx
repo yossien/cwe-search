@@ -1,7 +1,6 @@
 import { TextField, Box, makeStyles, createStyles} from "@material-ui/core"
 import React, { ChangeEvent, useEffect, useState } from "react"
-import {Autocomplete } from "@material-ui/lab"
-import CweNetwork from "./CweNetwork"
+import { Autocomplete } from "@material-ui/lab"
 import { getCwe , getSelectorList } from "../service/CweService"
 import { cweType , selectorListType } from "../types"
 
@@ -28,15 +27,19 @@ const useStyles = makeStyles(() =>
   })
 )
 
-const CweSelector = () => {
+interface Props {
+  onChangeCweId : (cwe_id: string|null) => void
+}
+
+const CweSelector = (props: Props) => {
 
   const classes = useStyles()
-
   const [cweId, setCweId] = useState<string | null>(null)
   const [cwe, setCwe] = useState<cweType>(undefined)
 
   useEffect(() => {
     setCwe(getCwe(cweId))
+    props.onChangeCweId(cweId)
   }, [cweId])
 
   const selector = getSelectorList()
@@ -80,7 +83,6 @@ const CweSelector = () => {
         </div>
       </div>
       <hr/>
-      {cwe && <CweNetwork cwe_id={cwe?.id}/>}
     </>
   )
 }

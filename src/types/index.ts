@@ -11,10 +11,20 @@ export type selectorListType = {
   description: string,
 }
 
-export type netWorkType = {
+export type cweNodeType = {
+  id: string,
+  name: string,
+}
+
+export type cweLinkType = {
+  source: string,
+  target: string,
+}
+
+export type cweNetWorkType = {
   nodes :
-    {id: number, name: string}[]
+    cweNodeType[]
   ,
   links :
-    {source: number, target: number}[]
+    cweLinkType[]
 }

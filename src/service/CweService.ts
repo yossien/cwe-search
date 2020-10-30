@@ -1,5 +1,5 @@
 import cwe from "../data/cwe"
-import { cweType, netWorkType, selectorListType } from "../types"
+import { cweNetWorkType, cweNodeType, cweLinkType, cweType, selectorListType } from "../types"
 
 export const getCwe = (_id: string | null): cweType =>{
 
@@ -21,7 +21,6 @@ export const getCwe = (_id: string | null): cweType =>{
 export const getSelectorList = (): selectorListType[] => {
 
   return cwe.map(row => {
-   
     const {id, name, description} = row
 
     return {
@@ -49,43 +48,80 @@ export const createRelMap = ():Map<string,string[]> => {
   return r
 }
 
-export const createNetWork = ():netWorkType => {
+const linkSearch = (id: string, r: Array<cweLinkType> = Array<cweLinkType>()) => {
 
-  const m = new Map<string,{id: number, name: string}>()
-  let newNumber = 0
-
-  cwe.forEach(c => {
-    m.set(c.id, {id: ++newNumber, name: `${c.id} - ${c.name}`})
+  const cn = createNetWork()
+  const t = cn.links.filter(d => {
+    return id === d.source
   })
 
-  const nodes = cwe.reduce((acc,c) => {
-    const v = m.get(c.id)
-    if (v !== undefined) {
-      acc.push(v)
+  if (t.length <= 0) {return r}
+
+  t.forEach(d => {
+    r.push(d)
+    r = linkSearch(d.target, r)
+  })
+
+  return r
+}
+
+const nodeSearch = (links: Array<cweLinkType>) => {
+
+  const n = Array<string>()
+  links.forEach(({source, target}) => {
+    if (n.indexOf(source) < 0) {n.push(source)}
+    if (n.indexOf(target) < 0) {n.push(target)}
+  })
+
+  const r = Array<cweNodeType>()
+  n.forEach(d => {
+    const c = getCwe(d)
+    if (c !== undefined){
+      r.push({
+        id: c.id,
+        name: c.name
+      })
     }
+  })
+
+  return r
+}
+
+export const filterNetWork = (cwe_id: string): cweNetWorkType => {
+
+  const links = linkSearch(cwe_id)
+  const nodes = nodeSearch(links)
+
+  return {
+    links,
+    nodes
+  }
+}
+
+export const createNetWork = ():cweNetWorkType => {
+
+  const nodes = cwe.reduce((acc,c) => {
+    const {id, name} = c
+    acc.push({
+      id, name
+    })
     return acc
-  }, Array<{id:number, name:string}>())
+  }, Array<cweNodeType>())
 
   const relMap = createRelMap()
 
-  const links = Array<{source: number, target: number}>()
+  const links = Array<cweLinkType>()
   for (const k of relMap.keys()) {
     const v = relMap.get(k)
     if (v !== undefined) {
       v.forEach(c => {
 
-        const s = m.get(k)
-        const t = m.get(c)
+        const source = k
+        const target = c
 
-        if (s !== undefined && t !== undefined) {
-
-          const source = s.id
-          const target = t.id
-
-          links.push(
-            {source, target}
-          )
-        }
+        links.push(
+          {source, target}
+        )
       })
     }
   }

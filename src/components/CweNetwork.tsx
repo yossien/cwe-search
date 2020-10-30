@@ -1,18 +1,16 @@
-import { TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@material-ui/core"
-import { createNetWork, createRelMap, getCwe } from "../service/CweService"
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@material-ui/core"
+import { getCwe, createRelMap } from "../service/CweService"
 
 const relList = createRelMap()
 
-const cweNetwork = createNetWork()
-
-const renderChidren = (children: string[]) => {
+const renderChildren = (children: string[]) => {
   const rows = children.map(child => {
 
     const cwe = getCwe(child)
     const name = cwe === undefined ? '' : cwe.name
 
     return (
-      <TableRow>
+      <TableRow key={cwe?.id}>
         <TableCell>
             {child}
         </TableCell>
@@ -25,19 +23,21 @@ const renderChidren = (children: string[]) => {
 
   return (
     <TableContainer component={Paper}>
-      <TableHead>
-        <TableRow>
-          <TableCell>
-            CWE-ID
-          </TableCell>
-          <TableCell>
-            Name
-          </TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {rows}
-      </TableBody>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>
+              CWE-ID
+            </TableCell>
+            <TableCell>
+              Name
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows}
+        </TableBody>
+      </Table>
     </TableContainer>
   )
 }
@@ -56,7 +56,7 @@ const CweNetwork = (props: Props) => {
       <div>
         <h2>Direct Children</h2>
       </div>
-      {children && renderChidren(children)}
+      {children !== undefined && renderChildren(children)}
     </>
   )
 }
