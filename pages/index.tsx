@@ -8,8 +8,9 @@ import Box from '@material-ui/core/Box';
 import CweSelector from '../src/components/CweSelector'
 import CweNetwork from '../src/components/CweNetwork'
 import CweGraph from '../src/components/CweGraph'
+import CweInfo from '../src/components/CweInfo';
 
-import { createStyles, makeStyles } from '@material-ui/core';
+import { AppBar, createStyles, makeStyles, Toolbar } from '@material-ui/core';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -29,21 +30,29 @@ const Index = () => {
   }
 
   return (
-    <Container maxWidth="sm" className={classes.root}>
-      <Box my={4}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          CWE Search
-        </Typography>
-        <hr/>
-        <CweSelector onChangeCweId={handleChangeCweId}/>
-      </Box>
-      <Box>
-        <CweGraph cwe_id={cweId} />
-      </Box>
-      <Box>
-        {cweId != null && <CweNetwork cwe_id={cweId}/>}
-      </Box>
-    </Container>
+    <>
+      <AppBar style={{backgroundColor: 'white', color: 'gray', padding: '12px'}} position="fixed">
+        <Toolbar>
+          <Typography variant="h4" component="h1" align="center">
+            CWE Search
+          </Typography>
+          <div style={{margin: '0px 12px'}}>
+          <CweSelector cwe_id={cweId} onChangeCweId={handleChangeCweId}/>
+          </div>
+        </Toolbar>
+      </AppBar>
+      <Container style={{marginTop: '108px'}} maxWidth="md" className={classes.root}>
+        <Box>
+          <CweInfo cwe_id={cweId} />
+        </Box>
+        <Box>
+          <CweGraph cwe_id={cweId} onChangeCweId={handleChangeCweId}/>
+        </Box>
+        <Box>
+          {cweId != null && <CweNetwork cwe_id={cweId}/>}
+        </Box>
+      </Container>
+    </>
   );
 }
 export default Index

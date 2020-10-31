@@ -1,88 +1,80 @@
-import { TextField, Box, makeStyles, createStyles} from "@material-ui/core"
-import React, { ChangeEvent, useEffect, useState } from "react"
+import { TextField, makeStyles, createStyles} from "@material-ui/core"
+import React, { ChangeEvent } from "react"
 import { Autocomplete } from "@material-ui/lab"
 import { getCwe , getSelectorList } from "../service/CweService"
-import { cweType , selectorListType } from "../types"
+import { selectorListType } from "../types"
 
 const useStyles = makeStyles(() =>
   createStyles({
-    root: {
-      display: 'flex',
-      margin: '24px auto',
-    },
     search_container: {
       alignItems: 'center',
       display: 'table',
-      width: '100%'
+      margin: '0px 24px'
     },
     input_container: {
       display: 'table-cell',
-      minWidth: '120px',
-      width: 'auto'
+      minWidth: '10rem'
     },
     result: {
       fontSize: '1.4em',
       fontWeight: 'bold'
-    }
+    },
   })
 )
 
 interface Props {
   onChangeCweId : (cwe_id: string|null) => void
+  cwe_id: string| null
 }
 
 const CweSelector = (props: Props) => {
 
   const classes = useStyles()
-  const [cweId, setCweId] = useState<string | null>(null)
-  const [cwe, setCwe] = useState<cweType>(undefined)
-
-  useEffect(() => {
-    setCwe(getCwe(cweId))
-    props.onChangeCweId(cweId)
-  }, [cweId])
+  const {cwe_id, onChangeCweId} = props
+  const cwe = getCwe(cwe_id)
 
   const selector = getSelectorList()
 
+  const validate = cwe === null
+
   return (
     <>
-      <Box className={classes.root}>
-        <div className={classes.search_container}>
-          <div className={classes.input_container}>
-            <Autocomplete
-              id="cwe_id_input"
-              options={selector as selectorListType[]}
-              autoHighlight
-              getOptionSelected={option => {return option !== null}}
-              getOptionLabel={(option) => option.id}
-              onChange={(_e:ChangeEvent<{}>, v:selectorListType | null)=>{
-                setCweId(v == null ? null : v.id)
-              }}
-              renderOption={(option) => (
-                <>
-                  {`${option.id} - ${option.name}`}
-                </>
-              )}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="CWE ID"
-                  variant="outlined"
-                />
-              )}
-            />
-          </div>
-        </div>
-      </Box>
-      <div>
-        <div className={classes.result}>
-          {cwe ? `${cwe?.id} - ${cwe.name}` : 'Unknown'}
-        </div>
-        <div>
-          {cwe && `${cwe.description}`}
+      <div className={classes.search_container}>
+        <div className={classes.input_container}>
+          <Autocomplete
+            id="cwe_id_input"
+            options={selector as selectorListType[]}
+            autoHighlight
+            getOptionSelected={(option, value) => {
+              return option !== null &&
+                option.id.startsWith(value.id)
+            }}
+            getOptionLabel={(option) => option.id}
+            onChange={(_e:ChangeEvent<{}>, v:selectorListType | null)=>{
+              onChangeCweId(v == null ? null : v.id)
+            }}
+            renderOption={(option) => (
+              <>
+                {`${option.id} - ${option.name}`}
+              </>
+            )}
+            renderInput={(params) => (
+              <>
+              <TextField
+                {...params} label="CWE ID"
+                variant="outlined"
+                error={validate}
+                onChange={(_e: ChangeEvent) => {
+                  onChangeCweId(_e.target.nodeValue)
+                }}
+                autoFocus={true}
+                fullWidth
+              />
+              </>
+            )}
+          />
         </div>
       </div>
-      <hr/>
     </>
   )
 }

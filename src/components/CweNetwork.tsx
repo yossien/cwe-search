@@ -45,7 +45,6 @@ const renderChildren = (children: string[]) => {
 interface Props {
   cwe_id: string
 }
-
 const CweNetwork = (props: Props) => {
 
   const {cwe_id} = props
@@ -54,7 +53,7 @@ const CweNetwork = (props: Props) => {
   return (
     <>
       <div>
-        <h2>Direct Children</h2>
+        <h2 style={{textAlign: 'center'}}>Direct Children</h2>
       </div>
       {children !== undefined && renderChildren(children)}
     </>

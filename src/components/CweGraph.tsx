@@ -6,12 +6,14 @@ import React from "react"
 
 interface Props {
   cwe_id: string|null
+  onChangeCweId?: (id: string| null) => void
 }
 
 export default class CweGraph extends Component<Props,{}> {
 
   ref:SVGSVGElement|null = null
   cweNetwork?: cweNetWorkType
+  height: number = 0
 
   eraseGraph() {
     const context: any = d3.select(this.ref)
@@ -32,7 +34,7 @@ export default class CweGraph extends Component<Props,{}> {
   }
 
   drawGraph() {
-    const {cwe_id} = this.props
+    const {cwe_id, onChangeCweId} = this.props
 
     if (cwe_id === null) return
 
@@ -42,7 +44,7 @@ export default class CweGraph extends Component<Props,{}> {
     const color = d3.scaleOrdinal(d3.schemeCategory10)
 
     const width = context.node().getBoundingClientRect().width
-    const height = width * 800 / 1280
+    this.height = width * 800 / 1280
 
     const link = context.append("g")
       .selectAll('line')
@@ -67,14 +69,14 @@ export default class CweGraph extends Component<Props,{}> {
           return color(d.id)
         })
 
-    /*
-    if (onSelect !== undefined){
+    if (onChangeCweId !== undefined){
+      console.log('called')
       nodeGroup
-        .on('click', function(d: cweNodeType){
-          onSelect(d.id)
+        .on('click', function(d: any){
+          console.log(d.target.textContent)
+          onChangeCweId(d.target.textContent)
         })
     }
-    */
 
     // node text
     nodeGroup
@@ -94,7 +96,7 @@ export default class CweGraph extends Component<Props,{}> {
         return d.id
       }))
       .force("charge", d3.forceManyBody().strength(-500))
-      .force("center", d3.forceCenter(width / 2 , height / 2))
+      .force("center", d3.forceCenter(width / 2 , this.height / 2))
       //.force("x", d3.forceX().strength(0.0000005).x(width / 2))
       //.force("y", d3.forceY().strength(0.0015).y(height / 2))
 
@@ -136,7 +138,7 @@ export default class CweGraph extends Component<Props,{}> {
     return (
       <>
         <h2 style={{textAlign: 'center'}}> Relation Diagram</h2>
-        <svg ref={(ref:SVGSVGElement) => this.ref = ref} width={'100%'}  height={400}>
+        <svg ref={(ref:SVGSVGElement) => this.ref = ref} width={'100%'}  height={this.height}>
         </svg>
       </>
     )
