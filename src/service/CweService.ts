@@ -48,18 +48,18 @@ export const createRelMap = ():Map<string,string[]> => {
   return r
 }
 
-const linkSearch = (id: string, r: Array<cweLinkType> = Array<cweLinkType>()) => {
+function childLinkSearch(id: string, r: Array<cweLinkType> = Array<cweLinkType>()) {
 
   const cn = createNetWork()
   const t = cn.links.filter(d => {
     return id === d.source
   })
 
-  if (t.length <= 0) {return r}
+  if (t.length <= 0) { return r}
 
   t.forEach(d => {
     r.push(d)
-    r = linkSearch(d.target, r)
+    r = childLinkSearch(d.target, r)
   })
 
   return r
@@ -89,7 +89,7 @@ const nodeSearch = (links: Array<cweLinkType>) => {
 
 export const filterNetWork = (cwe_id: string): cweNetWorkType => {
 
-  const links = linkSearch(cwe_id)
+  const links = childLinkSearch(cwe_id)
   const nodes = nodeSearch(links)
 
   return {

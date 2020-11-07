@@ -8,16 +8,14 @@ interface Props {
   cwe_id: string|null
   onChangeCweId?: (id: string| null) => void
 }
-
 export default class CweGraph extends Component<Props,{}> {
 
-  ref:SVGSVGElement|null = null
+  svgRef:SVGSVGElement|null = null
   cweNetwork?: cweNetWorkType
-  height: number = 0
+  height: number = 400
 
   eraseGraph() {
-    const context: any = d3.select(this.ref)
-
+    const context: any = d3.select(this.svgRef)
     context.selectAll('circle')
       .data([])
       .exit().remove()
@@ -40,25 +38,31 @@ export default class CweGraph extends Component<Props,{}> {
 
     this.cweNetwork = filterNetWork(cwe_id)
 
-    const context: any = d3.select(this.ref)
+    const context: any = d3.select(this.svgRef)
     const color = d3.scaleOrdinal(d3.schemeCategory10)
 
     const width = context.node().getBoundingClientRect().width
-    this.height = width * 800 / 1280
+    const height = context.node().getBoundingClientRect().height
 
-    const link = context.append("g")
+    const g = context.append('g')
+
+    const zoomed = (d3.zoom().on('zoom', (event:any) => {
+      g.attr('transform', (event.transform))
+    }))
+    context.call(zoomed)
+
+    const link = g.append("g")
       .selectAll('line')
       .data(this.cweNetwork.links)
       .enter()
       .append('line')
       .style('stroke', '#aaa')
 
-    const nodeGroup = context.append("g")
+    const nodeGroup = g.append("g")
       .selectAll('circle')
       .data(this.cweNetwork.nodes)
       .enter()
       .append("g")
-
     // node circle
     nodeGroup
       .append('circle')
@@ -70,14 +74,12 @@ export default class CweGraph extends Component<Props,{}> {
         })
 
     if (onChangeCweId !== undefined){
-      console.log('called')
       nodeGroup
         .on('click', function(d: any){
           console.log(d.target.textContent)
           onChangeCweId(d.target.textContent)
         })
     }
-
     // node text
     nodeGroup
       .append('text')
@@ -96,7 +98,7 @@ export default class CweGraph extends Component<Props,{}> {
         return d.id
       }))
       .force("charge", d3.forceManyBody().strength(-500))
-      .force("center", d3.forceCenter(width / 2 , this.height / 2))
+      .force("center", d3.forceCenter(width / 2 , height / 2))
       //.force("x", d3.forceX().strength(0.0000005).x(width / 2))
       //.force("y", d3.forceY().strength(0.0015).y(height / 2))
 
@@ -137,9 +139,17 @@ export default class CweGraph extends Component<Props,{}> {
 
     return (
       <>
-        <h2 style={{textAlign: 'center'}}> Relation Diagram</h2>
-        <svg ref={(ref:SVGSVGElement) => this.ref = ref} width={'100%'}  height={this.height}>
-        </svg>
+        <h2 style={{textAlign: 'center', color: '#666'}}> Relation Diagram</h2>
+        <div style={{minWidth: '800px',  minHeight: '400px'}}>
+          <svg ref={(ref:SVGSVGElement) => this.svgRef = ref} width={'100%'}  height={'400px'}
+            style={{
+              borderColor: '#666',
+              borderWidth: '1px',
+              borderStyle: 'solid'
+            }}
+          >
+          </svg>
+        </div>
       </>
     )
   }

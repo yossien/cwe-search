@@ -8,13 +8,21 @@ interface Props {
 const useStyles = makeStyles(() =>
   createStyles({
     root: {
-      display: 'flex',
-      margin: '24px auto',
+      color: '#666'
+    },
+    title: {
+      textAlign: 'center'
     },
     result: {
+      marginTop: '1rem',
+      marginLeft: '2rem',
       fontSize: '1.4em',
       fontWeight: 'bold'
+    },
+    description: {
+      margin: '1rem 2rem'
     }
+
   })
 )
 
@@ -25,14 +33,16 @@ const CweInfo = (props: Props) => {
   const classes = useStyles()
 
   return (
-    <Box>
-      <h2>Information.</h2>
+    <Box className={classes.root}>
+      <h2 className={classes.title}>Information.</h2>
+      <hr/>
       <div className={classes.result}>
         {cwe ? `${cwe?.id} - ${cwe.name}` : 'Unknown'}
       </div>
-      <div>
+      <div className={classes.description}>
         {cwe && `${cwe.description}`}
       </div>
+      <hr/>
     </Box>
   )
 }

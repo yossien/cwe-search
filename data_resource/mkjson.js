@@ -49,6 +49,10 @@ function getAllWeakness(rootElement) {
 
     const description = element.Description._text
 
+    let ex_description = element.Extended_Description
+    const extented_description = ex_description === undefined ? ''
+      : ex_description._text
+
     if (element !== null){
 
       const {ID, Name, Abstraction, Structure, Status} = element._attributes
@@ -60,6 +64,7 @@ function getAllWeakness(rootElement) {
         structure: Structure,
         status: Status,
         description,
+        extented_description,
         child
       })
     }

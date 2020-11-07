@@ -1,7 +1,22 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@material-ui/core"
+import { makeStyles, createStyles} from "@material-ui/core"
 import { getCwe, createRelMap } from "../service/CweService"
 
 const relList = createRelMap()
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      color: '#666'
+    },
+    title: {
+      textAlign: 'center'
+    },
+    message: {
+      textAlign: 'center'
+    }
+  })
+)
 
 const renderChildren = (children: string[]) => {
   const rows = children.map(child => {
@@ -49,14 +64,14 @@ const CweNetwork = (props: Props) => {
 
   const {cwe_id} = props
   const children = relList.get(cwe_id)
+  const classes = useStyles()
 
   return (
-    <>
-      <div>
-        <h2 style={{textAlign: 'center'}}>Direct Children</h2>
-      </div>
+    <div className={classes.root}>
+      <h2 className={classes.title}>Direct Children</h2>
       {children !== undefined && renderChildren(children)}
-    </>
+      {children === undefined && <p className={classes.message}>It does not have any children.</p>}
+    </div>
   )
 }
 

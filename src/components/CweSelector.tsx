@@ -24,7 +24,7 @@ const useStyles = makeStyles(() =>
 
 interface Props {
   onChangeCweId : (cwe_id: string|null) => void
-  cwe_id: string| null
+  cwe_id: string|null
 }
 
 const CweSelector = (props: Props) => {
@@ -35,7 +35,7 @@ const CweSelector = (props: Props) => {
 
   const selector = getSelectorList()
 
-  const validate = cwe === null
+  const validate = cwe_id !== null && cwe_id !== ''  && cwe === undefined
 
   return (
     <>
@@ -69,6 +69,7 @@ const CweSelector = (props: Props) => {
                 }}
                 autoFocus={true}
                 fullWidth
+                value={cwe_id}
               />
               </>
             )}
